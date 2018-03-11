@@ -1,0 +1,27 @@
+version: '2' # volumes是docker-compose version 2 才支持的关键字，所以此处要声明使用version2
+services:
+  web:
+    build: ./node_env # 指向Dockerfile存放的位置
+    ports: 
+      - 80:3000 # 端口映射
+    volumes: 
+      - ./:/home/src # 文件夹映射
+    command: sh /home/src/bin/enterpoint.sh #  入口命令
+    links:
+      - redis
+      - mongoDB
+
+  redis:
+    image: redis:3.2.0
+  
+  
+  mongoDB:
+    image: tutum/mongodb:3.2
+    volumes:
+      - db_volume:/data/db
+    environment:
+      AUTH: 'no' # 由于Docker container之间会形成内网环境，所以在不暴露的端口情况，可以不设置验证。
+    
+    # 数据持久化
+volumes:
+  db_volume:
